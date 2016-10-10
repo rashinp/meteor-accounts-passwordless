@@ -96,7 +96,7 @@ if(Meteor.isServer) {
       code: String
     });
 
-    if(!options.selector) throw new Meteor.Error('No selector setuped');
+    if(!options.selector) throw new Meteor.Error('You have to enter your email address to proceed');
 
     return Accounts.passwordless.verifyCode(options.selector, options.code);
   });
@@ -117,6 +117,9 @@ if(Meteor.isServer) {
       email = user.emails[0].address;
     } else {
       user = Meteor.users.findOne({ 'emails.address': selector });
+      if(!user){
+          throw new Meteor.Error('Cannot find any user with the email address ' + selector);
+      }
       // If the user doesn't exists, we'll create it when the user will verify his email
       email = selector;
     }
@@ -208,9 +211,10 @@ if(Meteor.isServer) {
     if(user) {
       uid = user._id;
     } else {
-      uid = createUser({ email: email });
-      user = Meteor.users.findOne(uid);
-      console.log('created user', uid, user);
+      // uid = createUser({ email: email });
+      throw new Meteor.Error('This user does not exist.');
+      // user = Meteor.users.findOne(uid);
+      // console.log('created user', uid, user);
     }
 
     if(user) {
